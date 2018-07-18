@@ -1,5 +1,6 @@
 """The forkchoice module implements the estimator function a blockchain"""
 
+from casper.protocols.sharded_casper.block import Block
 from casper.protocols.sharded_casper.sharded_casper_constants import Constants, BlockConstants
 
 def get_max_weight_indexes(scores):
@@ -15,7 +16,7 @@ def get_max_weight_indexes(scores):
     return max_weight_estimates
 
 
-def ghost_fork_choice(sid, last_finalized_block, children, latest_messages):
+def ghost_fork_choice(sid, last_finalized_block, children, latest_messages, stop_ghost_on_new_shard_msgs = False):
     """Returns the estimate by selecting highest weight sub-trees.
     Starts from the last_finalized_block and stops when it reaches a tip."""
 
@@ -32,7 +33,12 @@ def ghost_fork_choice(sid, last_finalized_block, children, latest_messages):
     while best_block in children:
         curr_scores = dict()
         max_score = 0
+
         for child in children[best_block]:
+            if (stop_ghost_on_new_shard_msgs):
+                if (not has_symmetric_messages(child, last_finalized_block)):
+                    continue
+                
             curr_scores[child] = scores.get(child, 0)
             max_score = max(curr_scores[child], max_score)
 
@@ -53,9 +59,21 @@ def get_parent_fork_choice(sid, last_finalized_block, children, latest_messages)
     return ghost_fork_choice(sid, last_finalized_block, children, latest_messages)
 
 def get_child_fork_choice(parent_sid, sid, shard_to_last_finalized_block, shard_to_children, latest_messages):
-    # parent_tip = get_parent_fork_choice(parent_sid, shard_to_last_finalized_block[parent_sid], shard_to_children[parent_sid], latest_messages)
 
-    return ghost_fork_choice(sid, shard_to_last_finalized_block[sid], shard_to_children[sid], latest_messages)
+    parent_tip = get_parent_fork_choice(parent_sid, shard_to_last_finalized_block[parent_sid], shard_to_children[parent_sid], latest_messages)
+
+    child_starting_points = _child_ghost_starting_block(shard_to_last_finalized_block[sid], shard_to_children[sid], parent_tip)
+
+    if (len(child_starting_points) == 0):
+        return Block(
+            sid,
+            shard_to_last_finalized_block[sid],
+            _get_sent_map_from_received_map(parent_tip.received_map),
+            _get_received_map_from_sent_map(parent_tip.sent_map),
+            Block.get_manufactured_block_name(sid))
+
+    return ghost_fork_choice(sid, child_starting_points[0], shard_to_children[sid], latest_messages, stop_ghost_on_new_shard_msgs=True)
+
 
 def get_fork_choice(sid, shard_to_last_finalized_block, shard_to_children, latest_messages):
     parent_sid = BlockConstants.get_parent_of_shard(sid)
@@ -84,3 +102,31 @@ def _are_sent_and_received_messages_equal(block_s1, block_s2):
 
     return s1_sent_set == s2_received_set
 
+def _child_ghost_starting_block(starting_child_block, children, target_block):
+
+    if (has_symmetric_messages(starting_child_block, target_block)):
+        return [starting_child_block]
+
+    if (not (starting_child_block in children)):
+        return []
+
+    starting_points = []
+
+    for child in children[starting_child_block]:
+        starting_points += _child_ghost_starting_block(child, children, target_block)
+
+    return starting_points
+    
+def _get_sent_map_from_received_map(received_map):
+    if (1 in received_map):
+        return { 2: received_map[1], 1: [] }
+    else:
+        return { 1: received_map[2], 2: [] }
+
+def _get_received_map_from_sent_map(sent_map):
+    if (1 in sent_map):
+        return { 2: sent_map[1], 1: [] }
+    else:
+        return { 1: sent_map[2], 2: [] }
+    
+        

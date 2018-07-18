@@ -44,3 +44,10 @@ class Block:
     def get_parent(self):
         return self.parent
 
+    @staticmethod
+    def get_manufactured_block_name(sid):
+        Block.NameCounter = Block.NameCounter + 1
+        res = "MF{}_{}".format(str(Block.NameCounter), str(sid))
+        return res
+        
+
