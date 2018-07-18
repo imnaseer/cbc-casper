@@ -3,6 +3,7 @@
 from casper.abstract_view import AbstractView
 from random import randint
 from casper.protocols.sharded_casper.sharded_casper_constants import Constants
+from casper.protocols.sharded_casper.sharded_casper_constants import BlockConstants
 from casper.protocols.sharded_casper.block import Block
 import casper.protocols.sharded_casper.forkchoice as forkchoice
 
@@ -10,8 +11,8 @@ class ShardedCasperView(AbstractView):
     """A view class that also keeps track of a last_finalized_block and children"""
     def __init__(self, messages=None):
         self.shard_to_children = { sid: dict() for sid in range(1, Constants.NumberOfShards + 1) }
-        self.shard_to_last_finalized_block = { sid: Constants.ShardToGenesisBlock[sid] for sid in range(1, Constants.NumberOfShards + 1) }
-        self.shard_to_genesis_block = { sid: Constants.ShardToGenesisBlock[sid] for sid in range(1, Constants.NumberOfShards + 1) }
+        self.shard_to_last_finalized_block = { sid: BlockConstants.ShardToGenesisBlock[sid] for sid in range(1, Constants.NumberOfShards + 1) }
+        self.shard_to_genesis_block = { sid: BlockConstants.ShardToGenesisBlock[sid] for sid in range(1, Constants.NumberOfShards + 1) }
 
         super().__init__(messages)
 
@@ -25,7 +26,11 @@ class ShardedCasperView(AbstractView):
             self.latest_messages) for sid in range(1, Constants.NumberOfShards + 1) }
 
         shard_to_extend = randint(1, Constants.NumberOfShards)
-        new_block = Block(shard_to_extend, sharded_tips[shard_to_extend], [], [])
+        new_block = Block(
+            shard_to_extend,
+            sharded_tips[shard_to_extend],
+            { sid: [] for sid in range(1, Constants.NumberOfShards + 1) },
+            { sid: [] for sid in range(1, Constants.NumberOfShards + 1) })
         sharded_tips[shard_to_extend] = new_block
 
         return sharded_tips

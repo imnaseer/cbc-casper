@@ -7,6 +7,7 @@ from casper.protocols.sharded_casper.block import Block
 from casper.protocols.sharded_casper.message import ShardChains
 from casper.protocols.sharded_casper.sharded_casper_plot_tool import ShardedCasperPlotTool
 from casper.protocols.sharded_casper.sharded_casper_constants import Constants
+from casper.protocols.sharded_casper.sharded_casper_constants import BlockConstants
 
 class ShardedCasperProtocol(Protocol):
     """A protocol for coming to consensus on sharded casper chains"""
@@ -44,7 +45,7 @@ class ShardedCasperProtocol(Protocol):
     def set_initial_messages(self):
 
         initial_message = ShardChains(
-            { sid: Constants.ShardToGenesisBlock[sid] for sid in range(1,Constants.NumberOfShards + 1) },
+            { sid: BlockConstants.ShardToGenesisBlock[sid] for sid in range(1,Constants.NumberOfShards + 1) },
             dict(),
             self.global_validator_set.get_validator_by_name(0),
             -1,

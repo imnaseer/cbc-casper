@@ -1,23 +1,18 @@
 """The block module implements the block data structure for a blockchain"""
 from casper.message import Message
 
-# parent block, data, sent queue, received queue
-# sent queue: [i x base block x N]*
-# received queue: [i x base block x N]*
-
 class ShardMessage:
-    def __init__(self, shard_id, base_block, time_to_live):
-        self.shard_id = shard_id
+    def __init__(self, msg, base_block, time_to_live):
+        self.msg = shard_msg
         self.base_block = base_block
         self.time_to_live = time_to_live
-
 
 class Block:
     """Block data structure for blockchain consensus"""
        
     NameCounter = 0
 
-    def __init__(self, shard_id, parent, sent_queue, received_queue, name=None):
+    def __init__(self, shard_id, parent, sent_map, received_map, name=None):
 
         # number of blocks since genesis
         if parent:
@@ -33,8 +28,8 @@ class Block:
 
         self.parent = parent
         self.shard_id = shard_id
-        self.sent_queue = sent_queue
-        self.received_queue = received_queue
+        self.sent_map = sent_map
+        self.received_map = received_map
 
     def get_name(self):
         return self.name
@@ -44,3 +39,4 @@ class Block:
 
     def get_parent(self):
         return self.parent
+
