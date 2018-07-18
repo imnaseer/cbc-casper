@@ -20,7 +20,7 @@ class ConcurrentView(AbstractView):
         self.select_outputs = select
         self.create_outputs = create
 
-    def estimate(self):
+    def estimate(self, data=None):
         """Returns the current forkchoice in this view"""
         available_outputs, output_sources = forkchoice.get_fork_choice(
             self.children,

@@ -61,7 +61,7 @@ class Protocol(object):
 
     def make_message(self, validator, message_name, data):
         """Have a validator generate a new message"""
-        new_message = validator.make_new_message()
+        new_message = validator.make_new_message(data)
         self.register_message(new_message, message_name)
 
     def send_message(self, validator, message_name, data):

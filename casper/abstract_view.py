@@ -16,7 +16,7 @@ class AbstractView(object):
 
         self.add_messages(messages)
 
-    def estimate(self):
+    def estimate(self, data=None):
         '''Must be defined in child class.
         Returns estimate based on current messages in the view'''
         raise NotImplementedError

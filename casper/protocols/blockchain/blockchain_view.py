@@ -13,7 +13,7 @@ class BlockchainView(AbstractView):
 
         super().__init__(messages)
 
-    def estimate(self):
+    def estimate(self, data=None):
         """Returns the current forkchoice in this view"""
         return forkchoice.get_fork_choice(
             self.last_finalized_block,

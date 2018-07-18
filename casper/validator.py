@@ -42,10 +42,10 @@ class Validator(object):
         """Allows the validator to receive protocol messages."""
         self.view.add_messages(messages)
 
-    def estimate(self):
+    def estimate(self, data=None):
         """The estimator function returns the set of max weight estimates.
         This may not be a single-element set because the validator may have an empty view."""
-        return self.view.estimate()
+        return self.view.estimate(data)
 
     def my_latest_message(self):
         """This function returns the validator's latest message."""
@@ -57,11 +57,11 @@ class Validator(object):
         """The validator checks estimate safety on some estimate with some safety oracle."""
         self.view.update_safe_estimates(self.validator_set)
 
-    def make_new_message(self):
+    def make_new_message(self, data):
         """This function produces a new latest message for the validator.
         It updates the validator's latest message, estimate, view, and latest observed messages."""
         new_message = self.message_class(
-            self.estimate(),
+            self.estimate(data),
             self.justification(),
             self,
             self._next_sequence_number(),

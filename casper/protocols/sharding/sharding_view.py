@@ -23,7 +23,7 @@ class ShardingView(AbstractView):
 
         super().__init__(messages)
 
-    def estimate(self):
+    def estimate(self, data=None):
         """Returns the current forkchoice in this view"""
         shards_forkchoice = dict()
 

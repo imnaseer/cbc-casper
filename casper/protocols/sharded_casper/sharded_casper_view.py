@@ -15,9 +15,9 @@ class ShardedCasperView(AbstractView):
 
         super().__init__(messages)
 
-    def estimate(self):
+    def estimate(self, data=None):
         """Returns the current forkchoice in this view"""
-
+        
         sharded_tips = { sid: forkchoice.get_fork_choice(
             sid,
             self.shard_to_last_finalized_block[sid],

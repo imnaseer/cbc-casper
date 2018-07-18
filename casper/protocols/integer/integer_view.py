@@ -11,7 +11,7 @@ class IntegerView(AbstractView):
 
         self.last_finalized_estimate = None
 
-    def estimate(self):
+    def estimate(self, data=None):
         """Returns the current forkchoice in this view"""
         return estimator.get_estimate_from_latest_messages(
             self.latest_messages
