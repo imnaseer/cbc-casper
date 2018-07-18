@@ -37,7 +37,7 @@ class ShardedCasperView(AbstractView):
             random.Random().random() < 0.3):
 
             target_sid = 1 if sid == 2 else 2
-            new_sm = ShardMessage("x-shard-" + get_random_str(), sharded_tips[target_sid], 1000)
+            new_sm = ShardMessage("x-shard-" + get_random_str(6), sharded_tips[target_sid], 1000)
             new_sent_map[target_sid].append(new_sm)
 
         received_messages = [item for sublist in block.received_map.values() for item in sublist]

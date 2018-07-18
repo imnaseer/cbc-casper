@@ -53,7 +53,7 @@ def get_parent_fork_choice(sid, last_finalized_block, children, latest_messages)
     return ghost_fork_choice(sid, last_finalized_block, children, latest_messages)
 
 def get_child_fork_choice(parent_sid, sid, shard_to_last_finalized_block, shard_to_children, latest_messages):
-    #parent_tip = get_parent_fork_choice(parent_sid, shard_to_last_finalized_block[parent_sid], shard_to_children[parent_sid], latest_messages)
+    # parent_tip = get_parent_fork_choice(parent_sid, shard_to_last_finalized_block[parent_sid], shard_to_children[parent_sid], latest_messages)
 
     return ghost_fork_choice(sid, shard_to_last_finalized_block[sid], shard_to_children[sid], latest_messages)
 
