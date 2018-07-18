@@ -12,6 +12,7 @@ from casper.protocols.integer.integer_protocol import IntegerProtocol
 from casper.protocols.order.order_protocol import OrderProtocol
 from casper.protocols.concurrent.concurrent_protocol import ConcurrentProtocol
 from casper.protocols.sharding.sharding_protocol import ShardingProtocol
+from casper.protocols.sharded_casper.sharded_casper_protocol import ShardedCasperProtocol
 
 SELECT_PROTOCOL = {
     'blockchain': BlockchainProtocol,
@@ -19,7 +20,8 @@ SELECT_PROTOCOL = {
     'integer': IntegerProtocol,
     'order': OrderProtocol,
     'concurrent': ConcurrentProtocol,
-    'sharding': ShardingProtocol
+    'sharding': ShardingProtocol,
+    'sharded_casper': ShardedCasperProtocol
 }
 
 BIG_INT = 1000000000000

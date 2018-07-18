@@ -11,6 +11,7 @@ read the wiki: https://github.com/ethereum/cbc-casper/wiki
 '''
 import argparse
 from configparser import ConfigParser
+from random import seed
 
 from simulations.utils import (
     str2bool,
@@ -32,6 +33,9 @@ def default_configuration():
 
 def main():
     """Generates and runs specified CBC Casper simulation"""
+
+    seed(100)
+    
     config = default_configuration()
     parser = argparse.ArgumentParser(description='Run CasperCBC standard simulations.')
     parser.add_argument(

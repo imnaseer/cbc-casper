@@ -24,6 +24,9 @@ run-binary:
 run-blockchain:
 	venv/bin/python casper.py --protocol blockchain --msg-mode $(MODE) --network random
 
+run-sharded-casper:
+	venv/bin/python casper.py --protocol sharded_casper --msg-mode $(MODE) --network random
+
 run-concurrent:
 	venv/bin/python casper.py --protocol concurrent --msg-mode $(MODE)
 

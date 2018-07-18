@@ -20,6 +20,9 @@ class Validator(object):
         self.view_class = view_cls
         self.view = None
 
+    def get_name(self):
+        return "V" + str(self.name) + "  (" + str(round(self.weight, 1)) + ")"
+
     def __eq__(self, val):
         if val is None:
             return False

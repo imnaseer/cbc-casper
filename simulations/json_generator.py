@@ -125,6 +125,26 @@ def generate_blockchain_json(
     )
     return json.dumps(exe_obj)
 
+def generate_sharded_casper_json(
+        validators=5,
+        weights=None,
+        exe_str=None,
+        msg_mode='rand',
+        network='no-delay',
+        rounds=10,
+    ):
+    """Generates JSON string for blockchain protocol execution"""
+    exe_obj = make_base_exe_obj(
+        'sharded_casper',
+        validators,
+        weights,
+        exe_str,
+        msg_mode,
+        network,
+        rounds
+    )
+    return json.dumps(exe_obj)
+
 
 def generate_order_json(
         validators=5,
@@ -233,6 +253,7 @@ def generate_concurrent_json(
 
 SELECT_JSON_GENERATOR = {
     'blockchain': generate_blockchain_json,
+    'sharded_casper': generate_sharded_casper_json,
     'binary': generate_binary_json,
     'integer': generate_integer_json,
     'order': generate_order_json,
