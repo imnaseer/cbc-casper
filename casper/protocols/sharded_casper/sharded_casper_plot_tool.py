@@ -33,7 +33,7 @@ class ShardedCasperPlotTool(PlotTool):
 
         return str
 
-    def plot_text(self):
+    def plot(self):
         print("Round " + str(self.round))
         print("")
 
@@ -51,7 +51,7 @@ class ShardedCasperPlotTool(PlotTool):
         self.round += 1
 
 
-    def plot(self):
+    def plot_visual(self):
 
         fig_size = plt.rcParams["figure.figsize"]
         fig_size[0] = 20

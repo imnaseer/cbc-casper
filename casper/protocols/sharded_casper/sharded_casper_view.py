@@ -37,7 +37,7 @@ class ShardedCasperView(AbstractView):
             random.Random().random() < 0.3):
 
             target_sid = 1 if sid == 2 else 2
-            new_sm = ShardMessage("x-shard-" + get_random_str(6), sharded_tips[target_sid], 1000)
+            new_sm = ShardMessage("x-shard-" + get_random_str(6), block, sharded_tips[target_sid], 1000)
             new_sent_map[target_sid].append(new_sm)
 
         received_messages = [item for sublist in block.received_map.values() for item in sublist]
@@ -45,7 +45,7 @@ class ShardedCasperView(AbstractView):
         
         if ((len(received_messages) < Constants.PerShardReceiveLimit) and
             random.Random().random() < 0.5):
-
+ 
             source_sid = 1 if sid == 2 else 2
 
             # We don't have to check for duplicate receives as
@@ -55,7 +55,7 @@ class ShardedCasperView(AbstractView):
 
             sent_list = sharded_tips[source_sid].sent_map[sid]
             if (len(sent_list) == 1):
-                new_rm = ShardMessage(sent_list[0].msg, sent_list[0].base_block, sent_list[0].time_to_live)
+                new_rm = ShardMessage(sent_list[0].msg, sent_list[0].source_block, sent_list[0].target_base_block, sent_list[0].time_to_live)
                 new_received_map[source_sid].append(new_rm)
         
         new_block = Block(
