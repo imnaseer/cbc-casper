@@ -33,7 +33,7 @@ class ShardedCasperPlotTool(PlotTool):
 
         return str
 
-    def plot(self):
+    def plot_text(self):
         print("Round " + str(self.round))
         print("")
 
@@ -51,7 +51,29 @@ class ShardedCasperPlotTool(PlotTool):
         self.round += 1
 
 
-    def plot_visual(self):
+    # def add_block_recursively(self, block):
+    #     if block in self.blocks:
+    #         return
+    #     parent = None
+    #     while block != None:
+    #         blocks.add(block)
+    #         positions[block] = (
+    #             ((sid - 1) * 2 * N + validator.name + 1) / (2.0 * Constants.NumberOfShards * N),
+    #             0.2 + 0.1 * block.height
+    #         )
+    #         labels[block] = block.get_name()
+    #         if parent != None:
+    #             parent_edges.add((block, parent))
+    #         for sent_map_sid in block.sent_map:
+    #             for message in block.sent_map[sent_map_sid]:
+    #                 sent_edges.add((message.source_block, message.target_base_block))
+    #         for received_map_sid in block.received_map:
+    #             for message in block.sent_map[received_map_sid]:
+    #                 received_edges.add((message.source_block, message.target_base_block))
+    #         parent = block
+    #         block = block.get_parent()
+
+    def plot(self):
 
         fig_size = plt.rcParams["figure.figsize"]
         fig_size[0] = 20
@@ -61,7 +83,9 @@ class ShardedCasperPlotTool(PlotTool):
         graph = nx.Graph()
 
         blocks = set()
-        edges = set()
+        parent_edges = set()
+        sent_edges = set()
+        received_edges = set()
         positions = dict()
         labels = dict()
         for sid in range(1, Constants.NumberOfShards + 1):
@@ -77,43 +101,60 @@ class ShardedCasperPlotTool(PlotTool):
                     )
                     labels[block] = block.get_name()
                     if parent != None:
-                        edges.add((block, parent))
+                        parent_edges.add((block, parent))
+                    for sent_map_sid in block.sent_map:
+                        for message in block.sent_map[sent_map_sid]:
+                            sent_edges.add((message.source_block, message.target_base_block))
+                    for received_map_sid in block.received_map:
+                        for message in block.sent_map[received_map_sid]:
+                            received_edges.add((message.source_block, message.target_base_block))
                     parent = block
                     block = block.get_parent()
 
+        print(len(sent_edges), len(received_edges))
+        filtered_sent_edges = set()
+        for edge in sent_edges:
+            if edge[0] in blocks and edge[1] in blocks:
+                filtered_sent_edges.add(edge)
+        sent_edges = filtered_sent_edges
+        filtered_received_edges = set()
+        for edge in received_edges:
+            if edge[0] in blocks and edge[1] in blocks:
+                filtered_received_edges.add(edge)
+        received_edges = filtered_received_edges
+        print(len(sent_edges), len(received_edges))
+
         graph.add_nodes_from(blocks)
-        graph.add_edges_from(edges)
 
+        nx.draw_networkx_nodes(graph, positions, alpha=0.3, node_size=800,
+                               node_shape='s', node_color='blue', edge_color='black')
 
-        #for sid in range(1, Constants.NumberOfShards + 1):
-        #    for validator in self.view.latest_messages:
-        #        graph.add_edges_from([(self.view.latest_messages[validator],
-        #                               self.view.latest_messages[validator].estimate[sid])])
-
-        # positions = dict()
-        #
-        # sorted_validators = self.validator_set.sorted_by_name()
-        # for message in nodes:
-        #     # Index of val in list may have some small performance concerns.
-        #     if message.estimate is not None:
-        #         xslot = sorted_validators.index(message.sender) + 1
-        #     else:
-        #         xslot = (len(self.validator_set) + 1) / 2.0
-        #
-        #     positions[message] = (
-        #         (float)(xslot) / (float)(len(self.validator_set) + 1),
-        #         0.2 + 0.1 * message.display_height
-        #     )
-
-
-        nx.draw_networkx_nodes(graph, positions, alpha=0.5, node_shape='s', node_color='blue', edge_color='black')
         nx.draw_networkx_edges(
             graph,
             positions,
+            edgelist=parent_edges,
             width=3,
+            edge_color='blue',
+            style='solid',
+            alpha=0.5
+        )
+        nx.draw_networkx_edges(
+            graph,
+            positions,
+            edgelist=sent_edges,
+            width=1,
             edge_color='red',
             style='dotted',
-            alpha=0.5
+            alpha=0.1
+        )
+        nx.draw_networkx_edges(
+            graph,
+            positions,
+            edgelist=received_edges,
+            width=2,
+            edge_color='red',
+            style='dotted',
+            alpha=0.3
         )
         nx.draw_networkx_labels(graph, positions, labels=labels)
         ax = plt.gca()
