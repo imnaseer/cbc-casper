@@ -107,7 +107,7 @@ class ShardedCasperPlotTool(PlotTool):
                             sent_edges.add((message.source_block, message.target_base_block))
                     for received_map_sid in block.received_map:
                         for message in block.sent_map[received_map_sid]:
-                            received_edges.add((message.source_block, message.target_base_block))
+                            received_edges.add((message.source_block, block))
                     parent = block
                     block = block.get_parent()
 
@@ -145,13 +145,13 @@ class ShardedCasperPlotTool(PlotTool):
             width=1,
             edge_color='red',
             style='dotted',
-            alpha=0.1
+            alpha=0.3
         )
         nx.draw_networkx_edges(
             graph,
             positions,
             edgelist=received_edges,
-            width=2,
+            width=3,
             edge_color='red',
             style='dotted',
             alpha=0.3
@@ -160,5 +160,5 @@ class ShardedCasperPlotTool(PlotTool):
         ax = plt.gca()
         # ax.collections[0].set_edgecolor("black")
         #ax.text(0.4, 0.4, "Weights: ", fontsize=20)
-        plt.axvline(x=0.5)
+        plt.axvline(x=0.42)
         plt.show()
